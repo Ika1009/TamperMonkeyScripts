@@ -41,7 +41,7 @@
             console.log("KRECE " + i + " PO REDU");
             let windowNovi = window.open(url, "_blank"); // za svaku biznis stranu otvori window
 
-            await delay(8000);
+            await delay(5000);
             
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
 
@@ -52,21 +52,22 @@
             adresa = getCountryName(pageSource);
             //console.log("Ime zemlje:" + adresa);
 
-            if(datum == -1 || broj_telefona == -1 || adresa == -1) // da li su ispravni
-                console.log("Nije dobar jer je datum: " + datum + ", broj telefona: " + broj_telefona + ", adresa: " + adresa);
+            if(datum == -1 || broj_telefona == -1 || adresa == -1){ // da li su ispravni
+                //console.log("Nije dobar jer je datum: " + datum + ", broj telefona: " + broj_telefona + ", adresa: " + adresa);
+            }
             else
             {
-                console.log("DOBRA FIRMA");
                 let imeBiznisa = getBuisnessName(pageSource);
                 //console.log("Ime zemlje Biznisa:" + imeBiznisa);
                 let website = getBuisnessWebsite(pageSource);
                 //console.log("Website biznisa: " + website);
                 //let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date\n";
+                console.log("DOBRA FIRMA: " + imeBiznisa + " " + " ");
 
                 sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + website + "," + url + "," + '"' + datum + '"' + "\n"; 
                 console.log("SVI REZULTATI:" + sviRezultati);
             }
-            await delay(2000);
+            await delay(1000);
             windowNovi.close();
             
         }
@@ -78,7 +79,7 @@
         {
             let leviDeoIndex = pageSource.indexOf('page_creation_date":{"text":');
             let stringDatuma = pageSource.substring(leviDeoIndex + 28, leviDeoIndex + 68);
-            console.log(stringDatuma);
+            //console.log(stringDatuma);
             if(stringDatuma.contains("2022"))
                 return stringDatuma.slice(stringDatuma.indexOf(' - ') + 3, stringDatuma.indexOf('"},'));
             else
@@ -106,14 +107,15 @@
         {
             let leviDeoIndex = pageSource.indexOf('"meta":{"title":"');
             let imeBiznisa = pageSource.substring(leviDeoIndex + 17, leviDeoIndex + 70);
-            return imeBiznisa.slice(17, imeBiznisa.indexOf('","'));
+            // console.log("Ime biznisa neobradjeno:" + imeBiznisa);
+            return imeBiznisa.slice(0, imeBiznisa.indexOf('","'));
         }
         function getBuisnessWebsite(pageSource)
         {
             let buisnessWebsite = "";
-            let leviDeoIndex = pageSource.indexOf('u00252F\\u00252F');
+            let leviDeoIndex = pageSource.indexOf('"website":');
             if(leviDeoIndex != -1){ // ako postoji
-                buisnessWebsite = pageSource.substring(leviDeoIndex + 15, leviDeoIndex + 70);
+                buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
             }
             return buisnessWebsite.slice(0, buisnessWebsite.indexOf('\\u00252F'));
         }
