@@ -33,12 +33,27 @@
         }
         for(let i = 0; i < lista.length; i++)
         {
-            window.open(lista[i].getElementsByTagName("a")[1].href); // za svaku biznis stranu otvori window
+            let windowNovi = window.open(lista[i].getElementsByTagName("a")[1].href); // za svaku biznis stranu otvori window
+            let datum, broj_telefona, adresa;
+            windowNovi.addEventListener("load", function()// louduj stranicu
+            {
+                let pageSource = windowNovi.pageSource;
+                datum = getPageCreationDate(pageSource);
+                broj_telefona = getPhoneNumber(pageSource);
+                adresa = getCountryName(pageSource);
+                windowNovi.close();
+            })
             setTimeout(5000); // saceka da ga uradi
+
+            if(datum == -1 || broj_telefona == -1 || adresa == -1) // da li su ispravni
+                continue;
+            
+            // kod da dobije jos vise podataka
+            sviRezultati += "Page creation date: " + datum + ", Phone number: " + broj_telefona + ", Address: " + adresa + "\n"; 
+            
         }
-        function getPageCreationDate(response)
+        function getPageCreationDate(pageSource)
         {
-            let pageSource = response.responseText;
             let leviDeoIndex = pageSource.indexOf('page_creation_date":{"text":');
             let stringDatuma = pageSource.substring(leviDeoIndex, leviDeoIndex + 40);
             console.log(stringDatuma);
@@ -46,6 +61,26 @@
                 return stringDatuma;
             else
                 return -1;
+        }
+        function getPhoneNumber(pageSource)
+        {
+            let leviDeoIndex = pageSource.indexOf('"formatted_phone_number":"');
+            let stringBrojaTelefona = pageSource.substring(leviDeoIndex, leviDeoIndex + 20);
+            console.log(stringBrojaTelefona);
+            if(stringBrojaTelefona.split(",")[0].contains("null"))
+                return -1;
+            else
+                return stringBrojaTelefona.replace(/,+$/, '');
+        }
+        function getCountryName(pageSource)
+        {
+            let leviDeoIndex = pageSource.indexOf('"full_address":');
+            let stringImenaZemlje = pageSource.substring(leviDeoIndex, leviDeoIndex + 20);
+            console.log(stringImenaZemlje);
+            if(!stringImenaZemlje.contains("Australia"))
+                return -1;
+            else
+                return stringBrojaTelefona.split('"}')[0];
         }
     }); 
         
