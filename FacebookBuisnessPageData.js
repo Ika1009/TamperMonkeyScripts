@@ -67,8 +67,9 @@
             let leviDeoIndex = pageSource.indexOf('"formatted_phone_number":"');
             let stringBrojaTelefona = pageSource.substring(leviDeoIndex, leviDeoIndex + 20);
             console.log(stringBrojaTelefona);
-            if(stringBrojaTelefona.split(",")[0].contains("null"))
+            if(stringBrojaTelefona.split(",")[0].contains("null") || stringBrojaTelefona[4] != '4')
                 return -1;
+
             else
                 return stringBrojaTelefona.replace(/,+$/, '');
         }
