@@ -34,18 +34,47 @@
         }
         await delay(5000);
         //console.log("Duzina liste je: " + lista.length);
-        for(let i = 0; i < lista.length-1; i++)
+        for(let i = 0; i < /*lista.length-*/1; i++)
         {
             let datum, broj_telefona, adresa;
-            let url = lista[i].getElementsByTagName("a")[1];
+            let url = "https://www.facebook.com/profile.php?id=100083115681740"//lista[i].getElementsByTagName("a")[1];
             console.log("KRECE " + i + " PO REDU");
-            let windowNovi = window.open(url, "_blank"); // za svaku biznis stranu otvori window
+            let windowNovi = window.open(url); // za svaku biznis stranu otvori window
 
             await delay(5000);
             
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
 
-            datum = getPageCreationDate(pageSource);
+            if(pageSource.contains('page_creation_date":{"text":'))
+                datum = getPageCreationDate(pageSource);
+            else
+            {
+                let indexAbout = pageSource.indexOf('"section_type":"ABOUT"'); // izvlaci about link za novi window
+                let stringTemp = pageSource.substring(indexAbout + 22, indexAbout + 150);
+                stringTemp = stringTemp.slice(stringTemp.indexOf('"url":"') + 7, stringTemp.length - 1);
+                stringTemp = stringTemp.slice(0, stringTemp.indexOf('","'));
+                //console.log(stringTemp);
+                stringTemp += "_profile_transparency"; // da bi uslo odmah za datum
+
+                console.log(stringTemp);
+                await delay(1000);
+                windowNovi.close();
+                await delay(1000);
+                let windowNoviji = window.open(stringTemp);
+                await delay(5000);
+
+                let pageSource2 = windowNoviji.document.getElementsByClassName("html")[0].innerHTML;
+                // OVDE BACA ERROR
+                console.log(pageSource2);
+                
+                await delay(1000);
+                windowNoviji.close();
+
+                let pageTransparency = getPageCreationDate2(pageSource2);
+                console.log(pageTransparency);
+
+                datum = getPageCreationDate2(pageSource2);
+            }
             //console.log("Datum: " + datum);
             broj_telefona = getPhoneNumber(pageSource);
             //console.log("Broj Telefona: " + broj_telefona);
@@ -61,11 +90,10 @@
                 //console.log("Ime zemlje Biznisa:" + imeBiznisa);
                 let website = getBuisnessWebsite(pageSource);
                 //console.log("Website biznisa: " + website);
-                //let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date\n";
                 console.log("DOBRA FIRMA: " + imeBiznisa + " " + " ");
 
                 sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + website + "," + url + "," + '"' + datum + '"' + "\n"; 
-                console.log("SVI REZULTATI:" + sviRezultati);
+                //console.log("SVI REZULTATI:" + sviRezultati);
             }
             await delay(1000);
             windowNovi.close();
@@ -84,6 +112,18 @@
                 return stringDatuma.slice(stringDatuma.indexOf(' - ') + 3, stringDatuma.indexOf('"},'));
             else
                 return -1;
+        }
+        function getPageCreationDate2(pageSource)
+        {
+            let leviDeoIndex = pageSource.indexOf('"},"field_type":"creation_date"');
+            let stringDatuma = pageSource.substring(leviDeoIndex - 17, leviDeoIndex);
+            console.log("DATUM 2: " + stringDatuma);
+            if(stringDatuma.contains("2021") || stringDatuma.contains("2020") || stringDatuma.contains("2019") || stringDatuma.contains("2018") || stringDatuma.contains("2007") ||
+            stringDatuma.contains("2017") || stringDatuma.contains("2016") || stringDatuma.contains("2015") || stringDatuma.contains("2014") || stringDatuma.contains("2009") ||
+            stringDatuma.contains("2013") || stringDatuma.contains("2012") || stringDatuma.contains("2011") || stringDatuma.contains("2010") || stringDatuma.contains("2008"))
+                return -1;
+            else
+                return stringDatuma.slice(stringDatuma.indexOf('":"'), stringDatuma.length - 1);
         }
         function getPhoneNumber(pageSource)
         {
@@ -113,11 +153,16 @@
         function getBuisnessWebsite(pageSource)
         {
             let buisnessWebsite = "";
-            let leviDeoIndex = pageSource.indexOf('"website":');
-            if(leviDeoIndex != -1){ // ako postoji
+            let leviDeoIndex = pageSource.indexOf('u00252F\\u00252F');
+            leviDeoIndex = pageSource.indexOf('"website":');
+            if(leviDeoIndex != -1) { // ako postoji
                 buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
+                return buisnessWebsite.slice(0, buisnessWebsite.indexOf('\\u00252F'));
+            } else { // ako ne postoji taj
+                leviDeoIndex = pageSource.indexOf('"website":"');
+                buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
+                return buisnessWebsite.slice(0, buisnessWebsite.indexOf('","'));
             }
-            return buisnessWebsite.slice(0, buisnessWebsite.indexOf('\\u00252F'));
         }
         function saveData(data, fileName) {
             console.log("Saving data to " + fileName);
