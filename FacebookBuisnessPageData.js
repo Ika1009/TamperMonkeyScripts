@@ -34,16 +34,17 @@
         }
         await delay(5000);
         //console.log("Duzina liste je: " + lista.length);
-        for(let i = 0; i < /*lista.length-*/1; i++)
+        for(let i = 0; i < lista.length-1; i++)
         {
             let datum, broj_telefona, adresa;
-            let url = "https://www.facebook.com/profile.php?id=100083115681740"//lista[i].getElementsByTagName("a")[1];
+            let url = lista[i].getElementsByTagName("a")[1];
             console.log("KRECE " + i + " PO REDU");
             let windowNovi = window.open(url); // za svaku biznis stranu otvori window
 
             await delay(5000);
-            
+
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
+
 
             if(pageSource.contains('page_creation_date":{"text":'))
                 datum = getPageCreationDate(pageSource);
@@ -53,25 +54,19 @@
                 let stringTemp = pageSource.substring(indexAbout + 22, indexAbout + 150);
                 stringTemp = stringTemp.slice(stringTemp.indexOf('"url":"') + 7, stringTemp.length - 1);
                 stringTemp = stringTemp.slice(0, stringTemp.indexOf('","'));
-                //console.log(stringTemp);
                 stringTemp += "_profile_transparency"; // da bi uslo odmah za datum
 
-                console.log(stringTemp);
                 await delay(1000);
                 windowNovi.close();
                 await delay(1000);
                 let windowNoviji = window.open(stringTemp);
                 await delay(5000);
 
-                let pageSource2 = windowNoviji.document.getElementsByClassName("html")[0].innerHTML;
-                // OVDE BACA ERROR
+                let pageSource2 = windowNoviji.document.getElementsByTagName("html")[0].innerHTML;
                 console.log(pageSource2);
                 
                 await delay(1000);
                 windowNoviji.close();
-
-                let pageTransparency = getPageCreationDate2(pageSource2);
-                console.log(pageTransparency);
 
                 datum = getPageCreationDate2(pageSource2);
             }
@@ -123,14 +118,21 @@
             stringDatuma.contains("2013") || stringDatuma.contains("2012") || stringDatuma.contains("2011") || stringDatuma.contains("2010") || stringDatuma.contains("2008"))
                 return -1;
             else
-                return stringDatuma.slice(stringDatuma.indexOf('":"'), stringDatuma.length - 1);
+                return stringDatuma.slice(stringDatuma.indexOf('":"') + 3, stringDatuma.length - 1);
         }
         function getPhoneNumber(pageSource)
         {
             let leviDeoIndex = pageSource.indexOf('"formatted_phone_number":"');
             let stringBrojaTelefona = pageSource.substring(leviDeoIndex + 26, leviDeoIndex + 46);
             if(stringBrojaTelefona.contains("null") || stringBrojaTelefona[4] != '4')
-                return -1;
+            {
+                let leviDeoIndex = pageSource.indexOf('dir="auto">+61 4');
+                stringBrojaTelefona = pageSource.substring(leviDeoIndex + 11, leviDeoIndex + 46);
+                if(leviDeoIndex == -1 || stringBrojaTelefona.contains("null"))
+                    return -1;
+                
+                return stringBrojaTelefona.slice(0, stringBrojaTelefona.indexOf('</'))
+            }
             else
                 return stringBrojaTelefona.slice(1, stringBrojaTelefona.indexOf('","'));
         }
@@ -139,7 +141,14 @@
             let leviDeoIndex = pageSource.indexOf('"full_address":');
             let stringImenaZemlje = pageSource.substring(leviDeoIndex + 14, leviDeoIndex + 164);
             if(!stringImenaZemlje.contains("Australia"))
-                return -1;
+            {
+                //<div class="xzsf02u x6prxxf xvq8zen x126k92a x12nagc"><span class="x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u" dir="auto">
+                let leviDeoIndex = pageSource.indexOf('x1a2a7pz x1heor9g xt0b8zv" role="button" tabindex="0"><span class="x193iq5w xeuugli x13faqbe x1vvkbs x1xmvt09 x1lliihq x1s928wv xhkezso x1gmr53x x1cpjm7i x1fgarty x1943h6x xudqn12 x3x7a5m x6prxxf xvq8zen xo1l8bm xzsf02u" dir="auto">');
+                stringImenaZemlje = pageSource.substring(leviDeoIndex + 232, leviDeoIndex + 300);
+                if(leviDeoIndex == -1 || !stringImenaZemlje.contains("Australia"))
+                    return -1;
+                return stringImenaZemlje.slice(0, stringImenaZemlje.indexOf('</'))
+            }
             else
                 return stringImenaZemlje.slice(2, stringImenaZemlje.indexOf("Australia") + 9);
         }
@@ -155,14 +164,13 @@
             let buisnessWebsite = "";
             let leviDeoIndex = pageSource.indexOf('u00252F\\u00252F');
             leviDeoIndex = pageSource.indexOf('"website":');
-            if(leviDeoIndex != -1) { // ako postoji
-                buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
-                return buisnessWebsite.slice(0, buisnessWebsite.indexOf('\\u00252F'));
-            } else { // ako ne postoji taj
-                leviDeoIndex = pageSource.indexOf('"website":"');
-                buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
-                return buisnessWebsite.slice(0, buisnessWebsite.indexOf('","'));
-            }
+            if(leviDeoIndex == -1) // ako postoji
+                return -1;
+            
+            // ako ne postoji 
+            leviDeoIndex = pageSource.indexOf('"website":"');
+            buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
+            return buisnessWebsite.slice(0, buisnessWebsite.indexOf('","'));
         }
         function saveData(data, fileName) {
             console.log("Saving data to " + fileName);
