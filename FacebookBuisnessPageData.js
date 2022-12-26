@@ -33,37 +33,40 @@
             }
         }
         await delay(5000);
+
         //console.log("Duzina liste je: " + lista.length);
-        for(let i = 0; i < lista.length-1; i++)
+        for(let i = 0; i < lista.length; i++)
         {
             let datum, broj_telefona, adresa;
             let url = lista[i].getElementsByTagName("a")[1];
             console.log("KRECE " + i + " PO REDU");
-            let windowNovi = window.open(url); // za svaku biznis stranu otvori window
 
+            await delay(1000);
+            let windowNovi = window.open(url); // za svaku biznis stranu otvori window
             await delay(5000);
 
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
-
 
             if(pageSource.contains('page_creation_date":{"text":'))
                 datum = getPageCreationDate(pageSource);
             else
             {
+                console.log("Za " + url + ":  upao je za: About");
                 let indexAbout = pageSource.indexOf('"section_type":"ABOUT"'); // izvlaci about link za novi window
                 let stringTemp = pageSource.substring(indexAbout + 22, indexAbout + 150);
                 stringTemp = stringTemp.slice(stringTemp.indexOf('"url":"') + 7, stringTemp.length - 1);
                 stringTemp = stringTemp.slice(0, stringTemp.indexOf('","'));
                 stringTemp += "_profile_transparency"; // da bi uslo odmah za datum
+                stringTemp = stringTemp.replaceAll("\\/", "/"); // zamenjuje \/ sa /
 
                 await delay(1000);
                 windowNovi.close();
-                await delay(1000);
                 let windowNoviji = window.open(stringTemp);
                 await delay(5000);
+                this.window.focus();
 
                 let pageSource2 = windowNoviji.document.getElementsByTagName("html")[0].innerHTML;
-                console.log(pageSource2);
+                //console.log(pageSource2);
                 
                 await delay(1000);
                 windowNoviji.close();
@@ -84,10 +87,14 @@
                 let imeBiznisa = getBuisnessName(pageSource);
                 //console.log("Ime zemlje Biznisa:" + imeBiznisa);
                 let website = getBuisnessWebsite(pageSource);
+                if(website == -1)
+                    website = "There is no website";
+                else
+                    website = website.replaceAll("\\/", "/");
                 //console.log("Website biznisa: " + website);
                 console.log("DOBRA FIRMA: " + imeBiznisa + " " + " ");
 
-                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + website + "," + url + "," + '"' + datum + '"' + "\n"; 
+                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + "\n"; 
                 //console.log("SVI REZULTATI:" + sviRezultati);
             }
             await delay(1000);
