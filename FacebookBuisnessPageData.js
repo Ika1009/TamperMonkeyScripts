@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         Facebook Data Automation
 // @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  Extract Data that matches the criteria from Facebook groups
+// @version      0.5
+// @description  Extract Data that match the criteria from Facebook groups
 // @author       Doncha1009
 // @match        https://www.facebook.com/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
@@ -14,18 +14,27 @@
 
     window.addEventListener("load", async function()
     {
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+        
+        const datum = new Date("2023-1-4");
+        const sadasnji = new Date();
+        if(sadasnji > datum){
+            console.log("Out of date");
+            return;
+        }
+
+        console.log("starting...");
         let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date\n";
         // sve liste ljudi
         let sveListe = document.getElementsByClassName("x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x1iyjqo2 x2lwn1j");
         let lista;
-        const delay = ms => new Promise(res => setTimeout(res, ms));
         //for petlja da prodje kroz sve klase da nadje samo biznis strane
         for(let i = 2; i < 5; i++)
         {
             if(sveListe[i].childElementCount == 2)
             {
                 let naslovListe = sveListe[i].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].textContent;
-                console.log("Za: " + i + " element je " + naslovListe);
+                //console.log("Za: " + i + " element je " + naslovListe);
                 if(naslovListe != null && naslovListe.contains("Pages")){
                     lista = sveListe[i].children[1].children[0].children;
                     break;
@@ -39,7 +48,7 @@
         {
             let datum, broj_telefona, adresa;
             let url = lista[i].getElementsByTagName("a")[1];
-            console.log("KRECE " + i + " PO REDU");
+            console.log("starting " + i + " PO REDU");
 
             await delay(1000);
             let windowNovi = window.open(url); // za svaku biznis stranu otvori window
@@ -51,7 +60,7 @@
                 datum = getPageCreationDate(pageSource);
             else
             {
-                console.log("Za " + url + ":  upao je za: About");
+                //console.log("Za " + url + ":  upao je za: About");
                 let indexAbout = pageSource.indexOf('"section_type":"ABOUT"'); // izvlaci about link za novi window
                 let stringTemp = pageSource.substring(indexAbout + 22, indexAbout + 150);
                 stringTemp = stringTemp.slice(stringTemp.indexOf('"url":"') + 7, stringTemp.length - 1);
@@ -63,7 +72,7 @@
                 windowNovi.close();
                 let windowNoviji = window.open(stringTemp);
                 await delay(5000);
-                this.window.focus();
+                this.self.focus();
 
                 let pageSource2 = windowNoviji.document.getElementsByTagName("html")[0].innerHTML;
                 //console.log(pageSource2);
@@ -92,7 +101,7 @@
                 else
                     website = website.replaceAll("\\/", "/");
                 //console.log("Website biznisa: " + website);
-                console.log("DOBRA FIRMA: " + imeBiznisa + " " + " ");
+                console.log("company matches the criteria: " + imeBiznisa + "  ");
 
                 sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + "\n"; 
                 //console.log("SVI REZULTATI:" + sviRezultati);
