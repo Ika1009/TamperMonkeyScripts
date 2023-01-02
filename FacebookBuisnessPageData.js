@@ -15,7 +15,7 @@
     window.addEventListener("load", async function()
     {
         const delay = ms => new Promise(res => setTimeout(res, ms));
-        
+
         const datum = new Date("2023-1-4");
         const sadasnji = new Date();
         if(sadasnji > datum){
@@ -43,16 +43,17 @@
         }
         await delay(5000);
 
-        //console.log("Duzina liste je: " + lista.length);
+        console.log("The number of buisness pages: " + lista.length);
         for(let i = 0; i < lista.length; i++)
         {
             let datum, broj_telefona, adresa;
             let url = lista[i].getElementsByTagName("a")[1];
-            console.log("starting " + i + " PO REDU");
+            console.log("starting " + i + " company");
 
             await delay(1000);
             let windowNovi = window.open(url); // za svaku biznis stranu otvori window
             await delay(5000);
+            this.self.focus();
 
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
 
@@ -76,7 +77,7 @@
 
                 let pageSource2 = windowNoviji.document.getElementsByTagName("html")[0].innerHTML;
                 //console.log(pageSource2);
-                
+
                 await delay(1000);
                 windowNoviji.close();
 
@@ -103,12 +104,13 @@
                 //console.log("Website biznisa: " + website);
                 console.log("company matches the criteria: " + imeBiznisa + "  ");
 
-                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + "\n"; 
+                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + "\n";
                 //console.log("SVI REZULTATI:" + sviRezultati);
             }
             await delay(1000);
             windowNovi.close();
-            
+            await delay(1000);
+
         }
 
         saveData(sviRezultati, "foundData.csv");
@@ -128,7 +130,7 @@
         {
             let leviDeoIndex = pageSource.indexOf('"},"field_type":"creation_date"');
             let stringDatuma = pageSource.substring(leviDeoIndex - 17, leviDeoIndex);
-            console.log("DATUM 2: " + stringDatuma);
+            //console.log("DATUM 2: " + stringDatuma);
             if(stringDatuma.contains("2021") || stringDatuma.contains("2020") || stringDatuma.contains("2019") || stringDatuma.contains("2018") || stringDatuma.contains("2007") ||
             stringDatuma.contains("2017") || stringDatuma.contains("2016") || stringDatuma.contains("2015") || stringDatuma.contains("2014") || stringDatuma.contains("2009") ||
             stringDatuma.contains("2013") || stringDatuma.contains("2012") || stringDatuma.contains("2011") || stringDatuma.contains("2010") || stringDatuma.contains("2008"))
@@ -146,7 +148,7 @@
                 stringBrojaTelefona = pageSource.substring(leviDeoIndex + 11, leviDeoIndex + 46);
                 if(leviDeoIndex == -1 || stringBrojaTelefona.contains("null"))
                     return -1;
-                
+
                 return stringBrojaTelefona.slice(0, stringBrojaTelefona.indexOf('</'))
             }
             else
@@ -182,8 +184,8 @@
             leviDeoIndex = pageSource.indexOf('"website":');
             if(leviDeoIndex == -1) // ako postoji
                 return -1;
-            
-            // ako ne postoji 
+
+            // ako ne postoji
             leviDeoIndex = pageSource.indexOf('"website":"');
             buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
             return buisnessWebsite.slice(0, buisnessWebsite.indexOf('","'));
@@ -200,6 +202,6 @@
             a.click();
             window.URL.revokeObjectURL(url);
         };
-    }); 
-        
+    });
+
 })();
