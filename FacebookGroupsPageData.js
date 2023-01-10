@@ -1,12 +1,12 @@
 // ==UserScript==
-// @name         Facebook Data Automation
+// @name         Facebook Groups Data Automation
 // @namespace    http://tampermonkey.net/
 // @version      0.5
 // @description  Extract Data that match the criteria from Facebook groups
 // @author       Doncha1009
-// @match        https://www.facebook.com/*
+// @match        https://www.facebook.com/groups/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @grant        GM_xmlhttpRequest
+// @grant        none
 // ==/UserScript==
 
 (function() {
@@ -16,15 +16,15 @@
     {
         const delay = ms => new Promise(res => setTimeout(res, ms));
 
-        const datum = new Date("2023-1-4");
+        const datum = new Date("2023-1-15");
         const sadasnji = new Date();
         if(sadasnji > datum){
-            console.log("Out of date");
+            console.log("The 50$ left should be paid");
             return;
         }
 
         console.log("starting...");
-        let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date\n";
+        let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date, Category\n";
         // sve liste ljudi
         let sveListe = document.getElementsByClassName("x9f619 x1n2onr6 x1ja2u2z x78zum5 xdt5ytf x1iyjqo2 x2lwn1j");
         let lista;
@@ -44,8 +44,11 @@
         await delay(5000);
 
         console.log("The number of buisness pages: " + lista.length);
+        let pauzaBr = 1;
         for(let i = 0; i < lista.length; i++)
         {
+            if(i == pauzaBr * 200) { pauzaBr++; await delay(1800000); } // ceka pola sata da facebook ne bi blokirao
+
             let datum, broj_telefona, adresa;
             let url = lista[i].getElementsByTagName("a")[1];
             console.log("starting " + i + " company");
@@ -95,6 +98,7 @@
             else
             {
                 let imeBiznisa = getBuisnessName(pageSource);
+                let kategorija = getBuisnessCategory(pageSource);
                 //console.log("Ime zemlje Biznisa:" + imeBiznisa);
                 let website = getBuisnessWebsite(pageSource);
                 if(website == -1)
@@ -104,7 +108,7 @@
                 //console.log("Website biznisa: " + website);
                 console.log("company matches the criteria: " + imeBiznisa + "  ");
 
-                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + "\n";
+                sviRezultati += imeBiznisa + "," + broj_telefona + "," + '"' + adresa + '"' + "," + '"' + website + '"' + "," + '"' +  url + '"' + "," + '"' + datum + '"' + ',' + '"' + kategorija + '"' + "\n";
                 //console.log("SVI REZULTATI:" + sviRezultati);
             }
             await delay(1000);
@@ -189,6 +193,13 @@
             leviDeoIndex = pageSource.indexOf('"website":"');
             buisnessWebsite = pageSource.substring(leviDeoIndex + 10, leviDeoIndex + 70);
             return buisnessWebsite.slice(0, buisnessWebsite.indexOf('","'));
+        }
+        function getBuisnessCategory(pageSource)
+        {
+            let leviDeoIndex = pageSource.indexOf('"category_name":"');
+            let kategorija = pageSource.substring(leviDeoIndex + 17, leviDeoIndex + 68);
+            console.log(kategorija.slice(0, kategorija.indexOf('","')));
+            return kategorija.slice(0, kategorija.indexOf('","'));
         }
         function saveData(data, fileName) {
             console.log("Saving data to " + fileName);
