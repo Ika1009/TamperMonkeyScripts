@@ -228,10 +228,10 @@
             // ako nije gmail
             leviDeoIndex = pageSource.lastIndexOf('@');
             buisnessEmail = pageSource.substring(leviDeoIndex -30, leviDeoIndex + 30);
-            console.log(buisnessEmail);
-            if(leviDeoIndex == -1 || !buisnessEmail.contains("."))
+            buisnessEmail = buisnessEmail.slice(buisnessEmail.indexOf('>') + 1, buisnessEmail.indexOf('<'));
+            if(leviDeoIndex == -1 || !buisnessEmail.contains(".") || !buisnessEmail.contains("@"))
                 return "Email cannot be extracted";
-            return buisnessEmail.slice(buisnessEmail.indexOf('>') + 1, buisnessEmail.indexOf('<'));
+            return buisnessEmail;
         }
         function saveData(data, fileName) {
             console.log("Saving data to " + fileName);
