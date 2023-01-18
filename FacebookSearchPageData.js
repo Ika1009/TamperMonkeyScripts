@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Search Data Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.8
 // @description  Extract Data that match the criteria from Facebook Search Page
 // @author       Doncha1009
 // @match        https://www.facebook.com/search/*
