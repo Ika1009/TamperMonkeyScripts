@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Search Data Automation
 // @namespace    http://tampermonkey.net/
-// @version      1.8
+// @version      2.2
 // @description  Extract Data that match the criteria from Facebook Search Page
 // @author       Doncha1009
 // @match        https://www.facebook.com/search/*
@@ -20,10 +20,10 @@
 
         await delay(20000);
 
-        const datum = new Date("2023-1-19");
+        const datum = new Date("2023-1-26");
         const sadasnji = new Date();
         if(sadasnji > datum){
-            console.log("The 50$ left should be paid");
+            console.log("The trial expired");
             return;
         }
 
@@ -33,7 +33,7 @@
         let lista = [];
 
         //for petlja da prodje kroz sve klase da nadje samo url biznis strana
-        for(let i = 0; i < lista_ljudi.length - 2; i++)
+        for(let i = 0; i < lista_ljudi.length - 1; i++)
         {
             lista[i] = lista_ljudi[i].children[0].children[0].children[0].children[0].children[0].children[0].children[1].children[0].children[0].children[0].children[0].children[0].children[0].children[0].getAttribute("href");
         }
@@ -47,15 +47,15 @@
         //await delay(5000);
         console.log("The number of buisness pages: " + lista.length);
         let pauzaBr = 1;
-        for(let i = 0; i < lista.length - 2; i++)
+        for(let i = 0; i < lista.length - 1; i++)
         {
             if(i == pauzaBr * 250) { pauzaBr++; await delay(1800000); } // ceka pola sata da facebook ne bi blokirao
-
             let url = lista[i];
+            console.log(url)
 
             let datum, broj_telefona, adresa;
             console.log("starting " + i + " company");
-            
+
             await delay(1000);
             let windowNovi = window.open(url); // za svaku biznis stranu otvori window
             await delay(5000);
@@ -147,7 +147,7 @@
             //console.log("DATUM 2: " + stringDatuma);
             if(stringDatuma.contains("2021") || stringDatuma.contains("2020") || stringDatuma.contains("2019") || stringDatuma.contains("2018") || stringDatuma.contains("2007") ||
             stringDatuma.contains("2017") || stringDatuma.contains("2016") || stringDatuma.contains("2015") || stringDatuma.contains("2014") || stringDatuma.contains("2009") ||
-            stringDatuma.contains("2013") || stringDatuma.contains("2012") || stringDatuma.contains("2011") || stringDatuma.contains("2010") || stringDatuma.contains("2008") || 
+            stringDatuma.contains("2013") || stringDatuma.contains("2012") || stringDatuma.contains("2011") || stringDatuma.contains("2010") || stringDatuma.contains("2008") ||
             (stringDatuma.contains("January") && stringDatuma.contains("2022")))
                 return -1;
             else
@@ -180,17 +180,20 @@
                 stringImenaZemlje = pageSource.substring(leviDeoIndex + 232, leviDeoIndex + 300);
                 if(leviDeoIndex == -1 || !stringImenaZemlje.contains("Australia"))
                     return -1;
-                return stringImenaZemlje.slice(0, stringImenaZemlje.indexOf('</').replace("\\n", " "))
+                return stringImenaZemlje.slice(0, stringImenaZemlje.indexOf('</')).replaceAll("\\n", " ")
             }
             else
-                return stringImenaZemlje.slice(2, stringImenaZemlje.indexOf("Australia") + 9).replace("\\n", " ");
+                return stringImenaZemlje.slice(2, stringImenaZemlje.indexOf("Australia") + 9).replaceAll("\\n", " ");
         }
         function getBuisnessName(pageSource)
         {
             let leviDeoIndex = pageSource.indexOf('"meta":{"title":"');
             let imeBiznisa = pageSource.substring(leviDeoIndex + 17, leviDeoIndex + 70);
             //console.log("Ime biznisa neobradjeno:" + imeBiznisa);
-            return imeBiznisa.slice(0, imeBiznisa.indexOf('","')).split("|")[0].replace(`\\u`, "'s ");
+            imeBiznisa = imeBiznisa.slice(0, imeBiznisa.indexOf('","')).split("|")[0];
+            if(imeBiznisa.contains(`\\u`))
+                imeBiznisa = imeBiznisa.replaceAll(`\\u`, "'s ");
+            return imeBiznisa.slice(0, imeBiznisa.indexOf('","')).split("|")[0];
         }
         function getBuisnessWebsite(pageSource)
         {
@@ -216,13 +219,13 @@
             {
                 let leviDeoIndex = pageSource.indexOf('"category_name":"');
                 let kategorija = pageSource.substring(leviDeoIndex + 17, leviDeoIndex + 68);
-                return kategorija.slice(0, kategorija.indexOf('","')).replace("\\/", "&");
-            } 
+                return kategorija.slice(0, kategorija.indexOf('","')).replaceAll("\\/", "&");
+            }
             else if (pageSource.contains('"text":"Page '))
             {
                 let leviDeoIndex = pageSource.indexOf('"text":"Page');
                 let kategorija = pageSource.substring(leviDeoIndex + 19, leviDeoIndex + 100);
-                return kategorija.slice(0, kategorija.indexOf('"}')).replace("\\/", "&");;
+                return kategorija.slice(0, kategorija.indexOf('"}')).replaceAll("\\/", "&");;
             }
             return "There is no given category";
         }
