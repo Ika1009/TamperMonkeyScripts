@@ -100,6 +100,9 @@
             }
             else
             {
+                if(adresa.indexOf("&gt") != -1)
+                    adresa = adresa.slice(adresa.indexOf("&gt") + 8, adresa.length - 1);
+
                 let imeBiznisa = getBuisnessName(pageSource);
                 let kategorija = getBuisnessCategory(pageSource);
                 //console.log("Ime zemlje Biznisa:" + imeBiznisa);
@@ -180,7 +183,7 @@
                 stringImenaZemlje = pageSource.substring(leviDeoIndex + 232, leviDeoIndex + 300);
                 if(leviDeoIndex == -1 || !stringImenaZemlje.contains("Australia"))
                     return -1;
-                return stringImenaZemlje.slice(0, stringImenaZemlje.indexOf('</')).replaceAll("\\n", " ")
+                return stringImenaZemlje.slice(0, stringImenaZemlje.indexOf('</')).replaceAll("\\n", " ");
             }
             else
                 return stringImenaZemlje.slice(2, stringImenaZemlje.indexOf("Australia") + 9).replaceAll("\\n", " ");
@@ -193,7 +196,7 @@
             imeBiznisa = imeBiznisa.slice(0, imeBiznisa.indexOf('","')).split("|")[0];
             if(imeBiznisa.contains(`\\u`))
                 imeBiznisa = imeBiznisa.replaceAll(`\\u`, "'s ");
-            return imeBiznisa.slice(0, imeBiznisa.indexOf('","')).split("|")[0];
+            return imeBiznisa;
         }
         function getBuisnessWebsite(pageSource)
         {
