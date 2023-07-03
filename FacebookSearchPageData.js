@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Search Data Automation
 // @namespace    http://tampermonkey.net/
-// @version      2.51
+// @version      2.64
 // @description  Extract Data that match the criteria from Facebook Search Page
 // @author       Doncha1009
 // @match        https://www.facebook.com/search/*
@@ -18,7 +18,7 @@
  
         console.log("starting in 120 seconds...");
  
-        await delay(12000/*0*/);
+        await delay(120000);
  
         /*const datum = new Date("2023-1-31");
         const sadasnji = new Date();
@@ -30,17 +30,17 @@
         console.log("starting...");
         let DateFirstBoundary = promptForDate("Enter a first date boundary (e.g. June 8, 2010):")
         let DateSecondBoundary = promptForDate("Enter a second date boundary (e.g. June 8, 2010):")
-
+ 
         let sviRezultati = "Buisness Name,Phone Number,Address,Website,Facebook,Creation Date, Category, Email\n";
         let lista_ljudi = document.getElementsByClassName("x193iq5w x1xwk8fm")[0].children;
         let lista = [];
         //for petlja da prodje kroz sve klase da nadje samo url biznis strana
-        /*for(let i = 0; i < lista_ljudi.length - 1; i++)
+        for(let i = 0; i < lista_ljudi.length - 1; i++)
         {
-            lista[i] = lista_ljudi[i].children[0].children[0].children[0].children[0].children[0].children[0].children[1].children[0].children[0].children[0].children[0].children[0].children[0].children[0].getAttribute("href");
-        }*/
+            lista[i] = lista_ljudi[i].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[0].children[1].children[0].children[0].children[0].children[0].children[0].children[0].children[0].getAttribute("href")
+        }
  
-        lista[0] = "https://www.facebook.com/profile.php?id=100082873075641";
+        /*lista[0] = "https://www.facebook.com/profile.php?id=100082873075641";
         lista[1] = "https://www.facebook.com/profile.php?id=100083414017433";
         lista[2] = "https://www.facebook.com/profile.php?id=100084155977753";
         lista[3] = "https://www.facebook.com/profile.php?id=100085804250570";
@@ -56,7 +56,7 @@
         lista[13] = "https://www.facebook.com/profile.php?id=100085593604065";
         lista[14] = "https://www.facebook.com/profile.php?id=100085593604065";
         lista[15] = "https://www.facebook.com/profile.php?id=100082588638460";
-        lista[16] = "";
+        lista[16] = "";*/
  
  
  
@@ -65,16 +65,16 @@
         let pauzaBr = 1;
         for(let i = 0; i < lista.length - 1; i++)
         {
-            //if(i == pauzaBr * 250) { pauzaBr++; await delay(1800000); } // ceka pola sata da facebook ne bi blokirao
+            if(i == pauzaBr * 50) { pauzaBr++; await delay(10000); saveData(sviRezultati, "foundData.csv"); } // ceka pola sata da facebook ne bi blokirao
             let url = lista[i];
             //console.log(url)
  
             let datum, broj_telefona, adresa;
             console.log("starting " + i + " company");
  
-            await delay(1000);
+            await delay(4000);
             let windowNovi = window.open(url); // za svaku biznis stranu otvori window
-            await delay(5000);
+            await delay(8000);
             this.self.focus();
  
             let pageSource = windowNovi.document.getElementsByTagName("html")[0].innerHTML;
@@ -91,16 +91,16 @@
                 stringTemp += "_profile_transparency"; // da bi uslo odmah za datum
                 stringTemp = stringTemp.replaceAll("\\/", "/"); // zamenjuje \/ sa /
  
-                await delay(1000);
+                await delay(4000);
                 windowNovi.close();
                 let windowNoviji = window.open(stringTemp);
-                await delay(5000);
+                await delay(8000);
                 this.self.focus();
  
                 let pageSource2 = windowNoviji.document.getElementsByTagName("html")[0].innerHTML;
                 //console.log(pageSource2);
  
-                await delay(1000);
+                await delay(4000);
                 windowNoviji.close();
  
                 datum = getPageCreationDate2(pageSource2);
@@ -133,9 +133,9 @@
  
                 sviRezultati += '"' + imeBiznisa + '",' + broj_telefona + "," + '"' + adresa + '","' + website + '","' +  url + '","' + datum + '","' + kategorija + '","' + email + '",' + "\n";
             }
-            await delay(1000);
+            await delay(4000);
             windowNovi.close();
-            await delay(1000);
+            await delay(4000);
  
         }
  
