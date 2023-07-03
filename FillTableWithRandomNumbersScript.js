@@ -15,7 +15,9 @@
     'use strict';
 
     // Get references to the elements
+    // Get references to the elements
     const tableBody = document.getElementById('theTableBody');
+    const moreRowsBtn = document.getElementById('moreRowsBtn');
 
     // Function to generate a random number between min and max (inclusive)
     function getRandomNumber(min, max) {
@@ -34,9 +36,9 @@
 
     const minNumber = 0.02;
     const maxNumber = 0.1;
-    let lastRowIndex = 0;
-    
-    // Loop through each row in the table body
+    let lastRowIndex = tableBody.children.length;
+
+    // Loop through each row in the table body and fill it with a random number
     for (let i = 0; i < tableBody.children.length; i++) {
         const row = tableBody.children[i];
         const lastCell = row.lastElementChild;
@@ -46,10 +48,10 @@
 
         // Set the random number as the content of the last cell
         lastCell.textContent = randomNumber;
-    };
-    lastRowIndex = tableBody.children.length;
+    }
 
-    document.getElementById('moreRowsBtn').addEventListener('click', function() {
+    // Attach an event listener to the "+ more rows" button
+    moreRowsBtn.addEventListener('click', function() {
         // Create the new rows and fill them with random numbers
         for (let i = lastRowIndex; i < tableBody.children.length; i++) {
             const row = tableBody.children[i];
@@ -61,6 +63,8 @@
             // Set the random number as the content of the last cell
             lastCell.textContent = randomNumber;
         }
+
+        // Update the lastRowIndex to the new length of tableBody.children
         lastRowIndex = tableBody.children.length;
     });
 })();
