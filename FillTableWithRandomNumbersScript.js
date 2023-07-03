@@ -16,13 +16,14 @@
     const tableBody = document.getElementById('theTableBody');
     const moreRowsBtn = document.getElementById('moreRowsBtn');
 
-    console.log("starting");
+    console.log("Started");
     const minNumber = 0.02;
     const maxNumber = 0.1;
     let lastRowIndex = 0;
 
     // Loop through each row in the table body and fill it with a random number
     function fillTableRows() {
+        if(lastRowIndex == tableBody.children.length) return;
         for (let i = lastRowIndex; i < tableBody.children.length; i++) {
             const row = tableBody.children[i];
             const lastCell = row.lastElementChild;
