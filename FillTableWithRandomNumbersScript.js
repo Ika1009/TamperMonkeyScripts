@@ -4,7 +4,7 @@
 // @version      1.0
 // @description  Takes the website and fills the last column for every row with random numbers
 // @author       Doncha1009
-// @match        file:///D:/doc/Downloads/Website%20for%20scripting/Timecards%20Firmtracker.html
+// @match        *://*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
 // @grant        none
 // ==/UserScript==
