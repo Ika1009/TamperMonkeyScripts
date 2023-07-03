@@ -23,7 +23,7 @@
         /*const datum = new Date("2023-1-31");
         const sadasnji = new Date();
         if(sadasnji > datum){
-            console.log("The trial expired, if you could pay on this Paypal and not on Fiverr because Fiverr takes a big share: https://www.paypal.com/paypalme/Donca1009");
+            console.log("The trial expired");
             return;
         }*/
  
