@@ -13,7 +13,8 @@
 (function() {
     'use strict';
     console.log("Started");
- 
+    const delay = (milliSeconds) => new Promise(resolve => setTimeout(resolve, milliSeconds));
+
     // Get references to the elements
     const tableBody = document.getElementById('theTableBody');
     const moreRowsBtn = document.getElementById('moreRowsBtn');
@@ -24,7 +25,6 @@
  
     // Loop through each row in the table body and fill it with a random number
     function fillTableRows() {
-        if(lastRowIndex == tableBody.children.length) return;
         for (let i = lastRowIndex; i < tableBody.children.length; i++) {
             const row = tableBody.children[i];
             const lastCell = row.lastElementChild;
@@ -40,6 +40,7 @@
  
     // Attach an event listener to the "+ more rows" button
     moreRowsBtn.addEventListener('click', function() {
+        delay(1000);
         fillTableRows();
     });
  
