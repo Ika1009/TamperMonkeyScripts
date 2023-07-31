@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Find Free Spots
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Find all of the available space on the UK gov website when found
 // @author       You
 // @match        https://driver-services.dvsa.gov.uk/*
