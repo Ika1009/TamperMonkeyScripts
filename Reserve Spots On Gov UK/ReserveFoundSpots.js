@@ -9,45 +9,51 @@
 // @grant        none
 // @license      MIT
 // ==/UserScript==
-
-(function() {
+ 
+(async function() {
     'use strict';
 
     const table = document.getElementById("browseslots");
-    if(table) return
-
-    // Check if the browser supports notifications
-  if ('Notification' in window) {
-    // Request permission for notifications (if not already granted)
-    if (Notification.permission !== 'granted') {
-      Notification.requestPermission();
-    }
-  }
-    function showNotification() {
-        // Show a Windows notification
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification("Button Clicked!", {
-            body: "Places reserved!",
-            });
+    if(!table)
+    {
+      const delay = ms => new Promise(res => setTimeout(res, ms));
+      await delay(2000);
+      // Check if the browser supports notifications
+      if ('Notification' in window) {
+        // Request permission for notifications (if not already granted)
+        if (Notification.permission !== 'granted') {
+          Notification.requestPermission();
         }
-    }
-
-    console.log("reserving...");
-
-    const reserveButton = document.querySelectorAll('a[id^="reserve_"]')[0];
-    if (reserveButton) {
-        // Found the button, click it
-        reserveButton.click();
-    } else {
-         // Alert that the button is clicked
-         showNotification("The button is clicked!");
-         // Button not found, find the <a> element with class "laquo largetext bold" and click it
-         const returnToSearchResultsLink = document.querySelector("a.laquo.largetext.bold");
-         if (returnToSearchResultsLink) {
-             returnToSearchResultsLink.click();
-         } else {
-             console.log("Button and return link not found.");
-         }
+      }
+        function showNotification() {
+            // Show a Windows notification
+            if ('Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification("Button Clicked!", {
+                body: "Places reserved!",
+                });
+            }
+        }
+    
+        console.log("reserving...");
+    
+        const reserveButtons = document.querySelectorAll('a[id^="reserve_"]');
+        if (reserveButtons && reserveButtons.length != 0) {
+            // Found the button, click it
+            reserveButtons[0].click();
+            if (reserveButtons.length === 1) 
+            {
+              showNotification("The button is clicked!");
+            }
+        } else {
+            // Button not found, find the <a> element with class "laquo largetext bold" and click it
+            const returnToSearchResultsLink = document.querySelector("a.laquo.largetext.bold");
+            if (returnToSearchResultsLink) {
+                // Alert that the button is clicked
+                returnToSearchResultsLink.click();
+            } else {
+                console.log("Button and return link not found.");
+            }
+        }
     }
 
 })();

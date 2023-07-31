@@ -10,51 +10,45 @@
 // @license      MIT
 // ==/UserScript==
 
-(function() {
+(async function() {
     'use strict';
 
     // Checkinf if it is the right page, with the table
     const table = document.getElementById("browseslots");
-    if(!table) return
-    
-
-    const searchResultsDiv = document.getElementById("searchResults");
-
-    // checking if the date is 
-    if (searchResultsDiv) {
-    const firstChild = searchResultsDiv.firstElementChild;
-    if (firstChild && firstChild.tagName === "H3") {
-        const textContent = firstChild.textContent;
-        if (textContent.includes("2200")) {
-        // The text content contains "2200", so stop the program
-        return;
-        }
-    }
-    }
-      
-
-
-    const rows = table.querySelector("tbody").querySelectorAll("tr");
-
-    FindAvailableSpots();
-
-    const nextWeekLink = document.getElementById("searchForWeeklySlotsNextWeek");
-    if (nextWeekLink) nextWeekLink.click();
-
-
-    function FindAvailableSpots()
+    if(table)
     {
+        const delay = ms => new Promise(res => setTimeout(res, ms));
 
-        rows.forEach((row) => {
-            const tds = row.querySelectorAll("td");
-            for (let i = 1; i < tds.length - 1; i++) {
-                const anchor = tds[i].querySelector("a");
-                const text = anchor.textContent.trim();
-                if (!text.includes("0")) {
-                    anchor.click();
-                }
-            }
-        });
-    }
+        console.log("finding...");
+        await delay(2000);
     
+        await FindAvailableSpots();
+        async function FindAvailableSpots()
+        {
+            const table = document.getElementById("browseslots");
+            let rows = table.querySelector("tbody").querySelectorAll("tr");
+
+            rows.forEach((row) => {
+                const tds = row.querySelectorAll("td");
+                for (let i = 1; i < tds.length - 1; i++) {
+                    const anchor = tds[i].querySelector("a");
+                    const text = anchor.textContent.trim();
+                    if (!text.includes("0")) {
+                        anchor.click();
+                    }
+                }
+            });
+            await NextWeek();
+        } 
+        
+        async function NextWeek()
+        {
+            await delay(2000);
+            const nextWeekLink = document.getElementById("searchForWeeklySlotsNextWeek");
+            if (nextWeekLink) nextWeekLink.click();
+            await delay(2000);
+            await FindAvailableSpots();
+        }
+
+    }
 })();
