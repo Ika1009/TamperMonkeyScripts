@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reserve Free Spots
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      1.0
 // @description  Reserve the spots on the UK gov website when found
 // @author       You
 // @match        https://driver-services.dvsa.gov.uk/*
