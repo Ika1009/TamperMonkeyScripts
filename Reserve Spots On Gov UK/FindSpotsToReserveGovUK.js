@@ -17,10 +17,12 @@
     const table = document.getElementById("browseslots");
     if(table)
     {
-        const delay = ms => new Promise(res => setTimeout(res, ms));
+        function delay(ms) {
+            return new Promise(res => setTimeout(res, ms));
+        }
 
         console.log("finding...");
-        await delay(2000);
+        await delay(1200);
     
         await FindAvailableSpots();
         async function FindAvailableSpots()
@@ -43,10 +45,10 @@
         
         async function NextWeek()
         {
-            await delay(2000);
-            const nextWeekLink = document.getElementById("searchForWeeklySlotsNextWeek");
+            await delay(1200);
+            const nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
             if (nextWeekLink) nextWeekLink.click();
-            await delay(2000);
+            await delay(1200);
             await FindAvailableSpots();
         }
 

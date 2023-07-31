@@ -17,7 +17,7 @@
     if(!table)
     {
       const delay = ms => new Promise(res => setTimeout(res, ms));
-      await delay(2000);
+      await delay(1500);
       // Check if the browser supports notifications
       if ('Notification' in window) {
         // Request permission for notifications (if not already granted)
