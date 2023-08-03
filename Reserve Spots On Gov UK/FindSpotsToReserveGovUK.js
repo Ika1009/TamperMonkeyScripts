@@ -22,7 +22,7 @@
         }
 
         console.log("finding...");
-        await delay(1200);
+        await delay(2000);
     
         await FindAvailableSpots();
         async function FindAvailableSpots()
@@ -30,7 +30,7 @@
             const table = document.getElementById("browseslots");
             let rows = table.querySelector("tbody").querySelectorAll("tr");
 
-            rows.forEach((row) => {
+            rows.forEach(async (row) => {
                 const tds = row.querySelectorAll("td");
                 for (let i = 1; i < tds.length - 1; i++) {
                     const anchor = tds[i].querySelector("a");
@@ -38,6 +38,7 @@
                     if (!text.includes("0")) {
                         anchor.click();
                     }
+                    await delay(100);
                 }
             });
 
@@ -51,7 +52,7 @@
         
         async function VratiSeUnazad()
         {
-            await delay(1000);
+            await delay(2000);
             const backWeekLink = document.getElementById("searchForWeeklySlotsPreviousWeek");
             if (backWeekLink) 
             {
@@ -64,10 +65,10 @@
 
         async function NextWeek()
         {
-            await delay(1200);
+            await delay(2000);
             const nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
             if (nextWeekLink) nextWeekLink.click();
-            await delay(1200);
+            await delay(2000);
             await FindAvailableSpots();
         }
 
