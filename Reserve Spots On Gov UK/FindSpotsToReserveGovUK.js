@@ -52,7 +52,7 @@
         
         async function VratiSeUnazad()
         {
-            await delay(2000);
+            await delay(20000);
             const backWeekLink = document.getElementById("searchForWeeklySlotsPreviousWeek");
             if (backWeekLink) 
             {
@@ -65,14 +65,14 @@
         let i = 0;
         async function NextWeek()
         {
-            await delay(2000);
+            await delay(10000);
             
             let nextWeekLink;
             if(i%2==0) nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
             else nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
 
             if (nextWeekLink) nextWeekLink.click();
-            await delay(2000);
+            await delay(10000);
             i++;
             await FindAvailableSpots();
         }
