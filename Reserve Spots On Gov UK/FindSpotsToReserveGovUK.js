@@ -62,13 +62,18 @@
             else await FindAvailableSpots();
             
         }
-
+        let i = 0;
         async function NextWeek()
         {
             await delay(2000);
-            const nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
+            
+            let nextWeekLink;
+            if(i%2==0) nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
+            else nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
+
             if (nextWeekLink) nextWeekLink.click();
             await delay(2000);
+            i++;
             await FindAvailableSpots();
         }
 
