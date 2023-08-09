@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Reserve Free Spots
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.2
 // @description  Reserve the spots on the UK gov website when found
 // @author       You
 // @match        https://driver-services.dvsa.gov.uk/*
@@ -17,7 +17,7 @@
     if(!table)
     {
       const delay = ms => new Promise(res => setTimeout(res, ms));
-      await delay(2500);
+      await delay(1000);
       // Check if the browser supports notifications
       if ('Notification' in window) {
         // Request permission for notifications (if not already granted)
@@ -33,7 +33,18 @@
                 });
             }
         }
+        function CloseWarningPopup()
+        {
+            const backButton = document.getElementById("backButtonCloseDialog");
+            if (backButton) {
+              backButton.click();
+              console.log("Button clicked!");
+            }
+        }
     
+        await delay(100);
+        CloseWarningPopup()
+        await delay(100);
         console.log("reserving...");
     
         const reserveButtons = document.querySelectorAll('a[id^="reserve_"]');

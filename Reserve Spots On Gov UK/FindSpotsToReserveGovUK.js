@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Find Free Spots
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.5
 // @description  Find all of the available space on the UK gov website when found
 // @author       You
 // @match        https://driver-services.dvsa.gov.uk/*
@@ -13,6 +13,11 @@
 (async function() {
     'use strict';
 
+    // change this to change the time between searches, it is in miliseconds
+    const timeBetweenSearchesInMiliSeconds = 80000; // <-----
+    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
     // Checkinf if it is the right page, with the table
     const table = document.getElementById("browseslots");
     if(table)
@@ -22,37 +27,60 @@
         }
 
         console.log("finding...");
-        await delay(2000);
+        await delay(3000);
     
         await FindAvailableSpots();
         async function FindAvailableSpots()
         {
+            CloseWarningPopup();
+
             const table = document.getElementById("browseslots");
             let rows = table.querySelector("tbody").querySelectorAll("tr");
 
-            rows.forEach(async (row) => {
+            let maxNumber = 0;
+            let anchorWithMaxNumber = null;
+            
+            rows.forEach((row) => {
                 const tds = row.querySelectorAll("td");
                 for (let i = 1; i < tds.length - 1; i++) {
                     const anchor = tds[i].querySelector("a");
                     const text = anchor.textContent.trim();
-                    if (!text.includes("0")) {
-                        anchor.click();
+                    const numberMatch = text.match(/\d+/); // Extract the first number found in the text
+                    if (numberMatch) {
+                        const number = parseInt(numberMatch[0], 10);
+                        if (number > maxNumber && !text.includes(" 0 ")) {
+                            maxNumber = number;
+                            anchorWithMaxNumber = anchor;
+                        }
                     }
-                    await delay(100);
                 }
             });
+            
+            if (anchorWithMaxNumber) {
+                anchorWithMaxNumber.click();
+                console.log(`Clicked anchor with max number ${maxNumber}`);
+            }            
 
             // Checking if two months from now and need to go back
             let dateString = document.getElementsByClassName("centre bold")[0].innerText
+            console.log("Is it more than 2 months: " + isMoreThanTwoMonthsFromToday(dateString));
             if(isMoreThanTwoMonthsFromToday(dateString))
                 await VratiSeUnazad();
             else
                 await NextWeek();
         } 
-        
+        function CloseWarningPopup()
+        {
+            const backButton = document.getElementById("backButtonCloseDialog");
+            if (backButton) {
+              backButton.click();
+              console.log("Button clicked!");
+            }
+        }
         async function VratiSeUnazad()
         {
-            await delay(20000);
+            await delay(timeBetweenSearchesInMiliSeconds);
+            CloseWarningPopup();
             const backWeekLink = document.getElementById("searchForWeeklySlotsPreviousWeek");
             if (backWeekLink) 
             {
@@ -62,18 +90,14 @@
             else await FindAvailableSpots();
             
         }
-        let i = 0;
         async function NextWeek()
         {
-            await delay(10000);
+            await delay(timeBetweenSearchesInMiliSeconds);
             
-            let nextWeekLink;
-            if(i%2==0) nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
-            else nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
-
+            let nextWeekLink = document.getElementById("searchForWeeklySlotsNextAvailable");
             if (nextWeekLink) nextWeekLink.click();
-            await delay(10000);
-            i++;
+
+            await delay(1000);
             await FindAvailableSpots();
         }
 
