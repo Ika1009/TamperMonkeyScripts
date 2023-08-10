@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Find Free Spots
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Find all of the available space on the UK gov website when found
 // @author       You
 // @match        https://driver-services.dvsa.gov.uk/*
@@ -13,10 +13,13 @@
 (async function() {
     'use strict';
 
-    // change this to change the time between searches, it is in miliseconds
-    const timeBetweenSearchesInMiliSeconds = 80000; // <-----
+    // change this to change the time between searches, it is in seconds
+    const timeBetweenSearchesInSeconds = 80; // <-----
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+
+
+    const timeBetweenSearchesInMiliSeconds = timeBetweenSearchesInSeconds * 1000;
 
     // Checkinf if it is the right page, with the table
     const table = document.getElementById("browseslots");
