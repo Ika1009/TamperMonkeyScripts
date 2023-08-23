@@ -14,11 +14,14 @@
     'use strict';
 
     // change this to change the time between searches, it is in seconds
-    const timeBetweenSearchesInSeconds = 80; // <-----
+    const timeBetweenSearchesInSeconds = 7; // <-----
     // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
-
+    if (localStorage.getItem("auth") !== "allowed") {
+        console.log("Not validated. Contact the owner of the script...");
+        return;
+    }
     const timeBetweenSearchesInMiliSeconds = timeBetweenSearchesInSeconds * 1000;
 
     // Checkinf if it is the right page, with the table
@@ -35,7 +38,17 @@
         await FindAvailableSpots();
         async function FindAvailableSpots()
         {
+
             CloseWarningPopup();
+            // Checking if two months from now and need to go back
+            let dateString = document.getElementsByClassName("centre bold")[0].innerText
+            console.log("Is it more than 2 months: " + isMoreThanTwoMonthsFromToday(dateString));
+            if(isMoreThanTwoMonthsFromToday(dateString))
+            {
+                await VratiSeUnazad();
+                return;
+            }
+
 
             const table = document.getElementById("browseslots");
             let rows = table.querySelector("tbody").querySelectorAll("tr");
@@ -63,14 +76,8 @@
                 anchorWithMaxNumber.click();
                 console.log(`Clicked anchor with max number ${maxNumber}`);
             }            
-
-            // Checking if two months from now and need to go back
-            let dateString = document.getElementsByClassName("centre bold")[0].innerText
-            console.log("Is it more than 2 months: " + isMoreThanTwoMonthsFromToday(dateString));
-            if(isMoreThanTwoMonthsFromToday(dateString))
-                await VratiSeUnazad();
-            else
-                await NextWeek();
+            
+             await NextWeek();
         } 
         function CloseWarningPopup()
         {
@@ -91,7 +98,6 @@
                 await VratiSeUnazad();
             }
             else await FindAvailableSpots();
-            
         }
         async function NextWeek()
         {

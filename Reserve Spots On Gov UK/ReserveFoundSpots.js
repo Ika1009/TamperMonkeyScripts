@@ -13,15 +13,19 @@
 (async function() {
   'use strict';
 
-      // change this
-      const timeForReservingInSeconds = 1; // <-----
-      // ^^^^^^^^^^^^^^^^^^^^^^^^
+  // change this
+  const timeForReservingInSeconds = 1; // <-----
+  // ^^^^^^^^^^^^^^^^^^^^^^^^
 
 
 
+  if (localStorage.getItem("auth") !== "allowed") {
+      console.log("Not validated. Contact the owner of the script...");
+      return;
+  }
 
-      const timeForReservingInMiliSeconds = timeForReservingInSeconds * 1000;
 
+  const timeForReservingInMiliSeconds = timeForReservingInSeconds * 1000;
 
   const table = document.getElementById("browseslots");
   if(!table)
