@@ -15,7 +15,9 @@
 
     // change this to change the time between searches, it is in seconds
     const timeBetweenSearchesInSeconds = 7; // <-----
-    // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    // change this to change the time it takes for the script to go back a week when it should
+    const time_for_going_back_in_seconds = 3;
 
 
     if (localStorage.getItem("auth") !== "allowed") {
@@ -89,7 +91,7 @@
         }
         async function VratiSeUnazad()
         {
-            await delay(timeBetweenSearchesInMiliSeconds);
+            await delay(time_for_going_back_in_seconds*1000);
             CloseWarningPopup();
             const backWeekLink = document.getElementById("searchForWeeklySlotsPreviousWeek");
             if (backWeekLink) 
